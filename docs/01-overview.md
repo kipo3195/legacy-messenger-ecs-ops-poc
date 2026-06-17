@@ -65,19 +65,21 @@
 
 ## 5. 서비스 구성 범위
 
-본 POC에서는 기존 메신저 서비스를 구성하는 주요 서버를 ECS Service 단위로 분리하여 구동하고, 서비스 특성에 따라 ALB, NLB, Cloud Map을 적용했습니다.
+본 POC에서는 기존 메신저 서비스를 구성하는 주요 서버를 ECS Service 단위로 분리하여 구동했습니다.
+각 서비스는 기존 실행 구조를 유지한 상태에서 Docker 이미지로 패키징하고, ECS Task Definition 및 ECS Service를 통해 실행되도록 구성했습니다.
 
-| 서비스   | 주요 역할                           | 접근 방식           | 구성 상태 |
-| ----- | ------------------------------- | --------------- | ----- |
-| Websocket    | 클라이언트 로그인, HTTP/WebSocket 요청 처리 | ALB             | 구성 완료 |
-| Dispatcher    | 클라이언트 공통 정보 요청 및 서비스 간 Gateway       | NLB / Cloud Map | 구성 완료 |
-| Certify    | 클라이언트 인증 처리           | NLB             | 구성 완료 |
-| Notificator    | 클라이언트 실시간 송수신 처리                     | ALB 또는 내부 접근    | 구성 완료 |
-| Presence    | 클라이언트 상태 정보 서비스                      | NLB             | 구성 완료 |
-| Fetch | 채팅, 쪽지 데이터 조회/수집 계열 서비스                | NLB             | 구성 완료 |
-| File    | 파일 관련 서비스                       | NLB             | 구성 완료 |
+| 구분          | 대상 서비스                |
+| ----------- | --------------------- | 
+| 웹 클라이언트 접속 계층 | Websocket             |
+| 서비스 간 이벤트 디스패치 계층 | Dispatcher            | 
+| 인증 계층       | Certify               | 
+| 실시간 처리 계층   | Notificator, Presence | 
+| 데이터 조회 계층   | Fetch                 | 
+| 파일 처리 계층    | File                  | 
 
-서비스별 포트, Target Group, Listener, Health Check 구성은 `infra/` 디렉터리에서 관리합니다.
+서비스별 역할, 포트, ECS Network Mode, Load Balancer, Target Group, Health Check 구성은 `docs/02-architecture.md`와 `infra/` 디렉터리에서 상세히 정리합니다.
+
+
 
 ## 6. 현재 완료 범위
 
