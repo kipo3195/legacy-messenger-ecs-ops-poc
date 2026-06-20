@@ -1,0 +1,76 @@
+{
+  "family": "ds-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "executionRoleArn": "arn:aws:iam::메타데이터:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "ds",
+      "image": "메타데이터.dkr.ecr.ap-northeast-2.amazonaws.com/ds:0.1.0",
+      "cpu": 256,
+      "memory": 384,
+      "portMappings": [
+        {
+          "containerPort": 33000,
+          "hostPort": 33000,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 33001,
+          "hostPort": 33001,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "CONFIG_PATH",
+          "value": "/app/config/dbconfig.ini"
+        },
+        {
+          "name": "TZ",
+          "value": "Asia/Seoul"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "config-volume",
+          "containerPath": "/config",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "security-key-volume",
+          "containerPath": "/security_key",
+          "readOnly": true
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ds",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "volumes": [
+    {
+      "name": "config-volume",
+      "host": {
+        "sourcePath": "/home/ws/config"
+      }
+    },
+    {
+      "name": "security-key-volume",
+      "host": {
+        "sourcePath": "/home/ws/security_key"
+      }
+    }
+  ],
+  "placementConstraints": []
+}

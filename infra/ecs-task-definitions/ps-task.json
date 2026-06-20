@@ -1,0 +1,62 @@
+{
+  "family": "ps-task",
+  "networkMode": "bridge",
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::메타데이터:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "ps",
+      "image": "메타데이터.dkr.ecr.ap-northeast-2.amazonaws.com/ps:0.1.0",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 33003,
+          "hostPort": 33003,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "command": [
+        "ws",
+        "PS",
+        "33003"
+      ],
+      "environment": [
+        {
+          "name": "CONFIG_PATH",
+          "value": "/config/dbconfig.ini"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "config-volume",
+          "containerPath": "/config",
+          "readOnly": true
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ps",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "volumes": [
+    {
+      "name": "config-volume",
+      "host": {
+        "sourcePath": "/home/ws/config"
+      }
+    }
+  ],
+  "placementConstraints": []
+}
