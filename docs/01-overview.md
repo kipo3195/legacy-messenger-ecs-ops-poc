@@ -79,8 +79,6 @@
 
 서비스별 역할, 포트, ECS Network Mode, Load Balancer, Target Group, Health Check 구성은 `docs/02-architecture.md`와 `infra/` 디렉터리에서 상세히 정리합니다.
 
-
-
 ## 6. 현재 완료 범위
 
 현재 단계에서는 AWS ECS 기반 운영 환경 구성과 기존 클라이언트 기능 검증까지 완료했습니다.
