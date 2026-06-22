@@ -13,7 +13,7 @@
 | ---: | --- | --- | --- |
 | 33000 | DS | Internal Services | 내부 Dispatcher 접근 |
 | 33001 | DS | NLB | 외부 TCP 접근 |
-| 33002 | WS | ALB | HTTP/WebSocket |
+| 33002 | WS | ALB(Listener 80/443) → worker (허용: ALB SG -> worker SG, target hostPort) | HTTP/WebSocket |
 | 33003 | PS | NLB | 외부 TCP 접근 |
 | 33004 | NS | NLB | 외부 TCP 접근 |
 | 33006 | CS | NLB | 인증 TCP 접근 |
