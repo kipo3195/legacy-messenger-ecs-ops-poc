@@ -1,0 +1,8 @@
+-- WS의 컨테이너에 접속 
+docker exec -it 00b01329f3cc sh
+
+-- DS DNS 조회
+# getent hosts ds.service.local
+
+-- 결과
+172.31.47.117   ds.service.local

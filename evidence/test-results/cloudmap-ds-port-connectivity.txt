@@ -1,0 +1,10 @@
+-- WS의 컨테이너에 접속 
+docker exec -it 00b01329f3cc sh
+
+-- DS 내부 포트 연결 점검 
+# timeout 3 bash -c 'echo > /dev/tcp/ds.service.local/33000' \
+  && echo "SUCCESS: ds.service.local:33000 connected" \
+  || echo "FAIL: ds.service.local:33000 connection failed"> > 
+
+-- 결과
+SUCCESS: ds.service.local:33000 connected
