@@ -1,17 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-set -e
+SERVICE_NAME="${1:-}"
+DESIRED_COUNT="${2:-}"
 
-AWS_REGION="${AWS_REGION:-ap-northeast-2}"
-CLUSTER_NAME="${CLUSTER_NAME:-cluster}"
-
-SERVICE_NAME="$1"
-DESIRED_COUNT="$2"
-
-if [ -z "$SERVICE_NAME" ] || [ -z "$DESIRED_COUNT" ]; then
-  echo "Usage: $0 <ecs-service-name> <desired-count>"
+if [[ -z "$SERVICE_NAME" || -z "$DESIRED_COUNT" ]]; then
+  echo "Usage: $0 <service-name> <desired-count>"
   echo "Example: $0 ws-service 1"
-  echo "Example: $0 ws-service 0"
+  exit 1
+fi
+
+if [[ -z "${AWS_REGION:-}" || -z "${CLUSTER_NAME:-}" ]]; then
+  echo "AWS_REGION and CLUSTER_NAME must be set."
+  echo "Run: source .env"
   exit 1
 fi
 
@@ -20,5 +21,11 @@ aws ecs update-service \
   --cluster "$CLUSTER_NAME" \
   --service "$SERVICE_NAME" \
   --desired-count "$DESIRED_COUNT" \
-  --query "service.{Service:serviceName,Status:status,Desired:desiredCount,Running:runningCount,Pending:pendingCount}" \
+  --query 'service.{
+    serviceName:serviceName,
+    desiredCount:desiredCount,
+    runningCount:runningCount,
+    pendingCount:pendingCount,
+    status:status
+  }' \
   --output table

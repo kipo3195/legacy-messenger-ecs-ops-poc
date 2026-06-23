@@ -1,15 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-set -e
+SERVICE_NAME="${1:-}"
 
-AWS_REGION="${AWS_REGION:-ap-northeast-2}"
-CLUSTER_NAME="${CLUSTER_NAME:-cluster}"
-
-SERVICE_NAME="$1"
-
-if [ -z "$SERVICE_NAME" ]; then
-  echo "Usage: $0 <ecs-service-name>"
+if [[ -z "$SERVICE_NAME" ]]; then
+  echo "Usage: $0 <service-name>"
   echo "Example: $0 ws-service"
+  exit 1
+fi
+
+if [[ -z "${AWS_REGION:-}" || -z "${CLUSTER_NAME:-}" ]]; then
+  echo "AWS_REGION and CLUSTER_NAME must be set."
+  echo "Run: source .env"
   exit 1
 fi
 
@@ -18,5 +20,12 @@ aws ecs update-service \
   --cluster "$CLUSTER_NAME" \
   --service "$SERVICE_NAME" \
   --force-new-deployment \
-  --query "service.{Service:serviceName,Status:status,Desired:desiredCount,Running:runningCount,Pending:pendingCount,TaskDefinition:taskDefinition}" \
+  --query 'service.{
+    serviceName:serviceName,
+    desiredCount:desiredCount,
+    runningCount:runningCount,
+    pendingCount:pendingCount,
+    status:status,
+    taskDefinition:taskDefinition
+  }' \
   --output table

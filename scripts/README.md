@@ -19,49 +19,36 @@
 | `test-port-connectivity.sh` | 특정 host/port에 대한 TCP 연결 확인                                  |
 
 ---
-
 ## Environment Variables
 
-스크립트 실행 시 공통으로 사용하는 값은 환경변수로 분리했습니다.
+스크립트 실행 시 공통으로 사용하는 AWS Region, ECS Cluster Name, Service Name, Target Group ARN 값은 환경변수로 분리했습니다.
 
-민감한 값이나 실제 리소스 식별자는 저장소에 직접 포함하지 않고, `env.example` 파일을 참고하여 로컬 환경에서 별도 설정하는 방식을 사용합니다.
-
-```bash
-# env.example
-
-AWS_REGION=ap-northeast-2
-CLUSTER_NAME=cluster
-
-# ECS Service names
-WS_SERVICE=ws-service
-DS_SERVICE=ds-service
-PS_SERVICE=ps-service
-NS_SERVICE=ns-service
-CS_SERVICE=cs-service
-FETCH_SERVICE=fetch-service
-FS_SERVICE=fs-service
-
-# Target Group ARNs
-WS_TG_ARN=arn:aws:elasticloadbalancing:ap-northeast-2:xxxxxxxxxxxx:targetgroup/xxxxxxxx/xxxxxxxx
-DS_TG_ARN=arn:aws:elasticloadbalancing:ap-northeast-2:xxxxxxxxxxxx:targetgroup/xxxxxxxx/xxxxxxxx
-PS_TG_ARN=arn:aws:elasticloadbalancing:ap-northeast-2:xxxxxxxxxxxx:targetgroup/xxxxxxxx/xxxxxxxx
-NS_TG_ARN=arn:aws:elasticloadbalancing:ap-northeast-2:xxxxxxxxxxxx:targetgroup/xxxxxxxx/xxxxxxxx
-CS_TG_ARN=arn:aws:elasticloadbalancing:ap-northeast-2:xxxxxxxxxxxx:targetgroup/xxxxxxxx/xxxxxxxx
-FETCH_TG_ARN=arn:aws:elasticloadbalancing:ap-northeast-2:xxxxxxxxxxxx:targetgroup/xxxxxxxx/xxxxxxxx
-FS_TG_ARN=arn:aws:elasticloadbalancing:ap-northeast-2:xxxxxxxxxxxx:targetgroup/xxxxxxxx/xxxxxxxx
-```
-
-실제 사용 시에는 다음과 같이 `.env` 파일을 생성하여 사용할 수 있습니다.
+민감한 값이나 실제 리소스 식별자는 저장소에 직접 포함하지 않고, [`env.example`](./env.example) 파일을 참고하여 로컬 환경에서 `.env` 파일로 별도 관리합니다.
 
 ```bash
 cp env.example .env
 ```
 
-`.env` 파일은 실제 환경 정보를 포함할 수 있으므로 Git에 포함하지 않습니다.
+`.env` 파일에 실제 환경 값을 입력한 뒤, 다음과 같이 현재 shell에 로드합니다.
+
+```bash
+source .env
+```
+
+`.env` 파일은 실제 AWS 리소스 정보가 포함될 수 있으므로 Git에 포함하지 않습니다.
 
 ```gitignore
 scripts/.env
 ```
+
+주요 환경변수는 다음과 같습니다.
+
+| Variable       | Description              |
+| -------------- | ------------------------ |
+| `AWS_REGION`   | AWS Region               |
+| `CLUSTER_NAME` | ECS Cluster 이름           |
+| `*_SERVICE`    | ECS Service 이름           |
+| `*_TG_ARN`     | ALB/NLB Target Group ARN |
 
 ---
 
