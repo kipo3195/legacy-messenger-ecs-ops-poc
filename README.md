@@ -1,21 +1,27 @@
 # Legacy Messenger ECS Ops POC
 
-기존 온프레미스 기반 Java 메신저 서비스를 AWS ECS EC2 기반 컨테이너 운영 환경으로 전환하기 위해 구성한 POC 프로젝트입니다.
+기존 온프레미스 기반 Java 메신저 서비스를 AWS ECS EC2 기반 컨테이너 운영 모델로 전환하기 위한 운영 구조를 검증한 POC 프로젝트입니다.
 
 이 저장소는 애플리케이션 소스코드를 공개하는 저장소가 아니라, 레거시 메신저 서비스를 ECS 기반으로 운영하기 위해 검토하고 구성한 아키텍처, Task Definition, Load Balancer, Service Discovery, 운영 스크립트, 트러블슈팅 내용을 정리한 저장소입니다.
 
-## Summary
+## 30-Second Summary
 
-| 구분       | 내용                                                                                  |
-| -------- | ----------------------------------------------------------------------------------- |
-| 대상 시스템   | 온프레미스 기반 Java 메신저 서비스                                                               |
-| 기존 운영 방식 | 서버별 jar 배포, 프로세스 단위 수동 실행/중지/재기동                                                    |
-| 전환 목표    | ECS Service, Task Definition, Load Balancer, Cloud Map 기반 운영 구조 검증                  |
-| 주요 구성    | ECS EC2, ECR, ALB, NLB, Cloud Map, 운영 스크립트                                          |
-| 검증 범위    | 서비스 기동, 로드밸런서 연동, 내부 DNS 접근, Target Health, desired count 변경, 강제 재배포 제어                                   |
-| 주요 이슈    | ENI 부족, Network Mode 재설계, Cloud Map SRV 호환성, NLB Multi-AZ Timeout, Target unhealthy |
+기존 Java 메신저 서비스는 서버별로 jar 파일을 직접 배포하고, shell script 기반으로 프로세스를 실행/중지/재기동하는 방식으로 운영되고 있었습니다.
+
+본 POC에서는 이 구조를 ECS Service, Task Definition, Load Balancer, Cloud Map 기반의 컨테이너 운영 구조로 전환할 수 있는지 검증했습니다.
+
+| 구분       | 내용                                                                                        |
+| -------- | ----------------------------------------------------------------------------------------- |
+| 대상 시스템   | 온프레미스 기반 Java 메신저 서비스                                                                     |
+| 기존 운영 방식 | 서버별 jar 배포, shell script 기반 프로세스 실행/중지/재기동                                                |
+| 전환 목표    | ECS 기반 서비스 실행 관리, 로드밸런싱, 내부 서비스 디스커버리, 운영 제어 구조 검증                                        |
+| 주요 구성    | ECS EC2, ECR, ALB, NLB, Cloud Map, 운영 스크립트                                                |
+| 검증 범위    | 서비스 기동, ALB/NLB 연동, 내부 DNS 접근, Target Health, desired count 변경, force new deployment      |
+| 주요 이슈    | ENI 부족, Network Mode 재설계, Cloud Map SRV 호환성, NLB Multi-AZ Timeout, Target Group unhealthy |
 
 ## Architecture
+
+본 POC에서는 WebSocket 기반 서비스와 TCP 기반 레거시 서비스를 분리하여 ALB/NLB를 함께 사용하고, 내부 서비스 접근은 Cloud Map 기반으로 검증했습니다.
 
 ![ECS Architecture](./architecture/ecs-architecture.png)
 
@@ -28,7 +34,7 @@
 | ECS Runtime       | ECS EC2 Cluster, Task Definition, ECS Service 구성                   |
 | Load Balancing    | HTTP/WebSocket 요청은 ALB, TCP 기반 서비스는 NLB로 분리                        |
 | Service Discovery | Dispatcher 내부 접근을 위해 Cloud Map A Record 기반 구조 검토                   |
-| Operation         | desired count 변경, force deployment, target health check 스크립트 구성    |
+| Operation         | desired count 변경, force new deployment, target health check 스크립트 구성    |
 | Troubleshooting   | Network Mode, Cloud Map, NLB Multi-AZ, Target Health 관련 이슈 분석 및 해결 |
 
 ## Key Architecture Decisions
@@ -94,7 +100,7 @@ ECS 운영 중 반복적으로 수행하는 서비스 상태 확인, desired cou
 | [`06-result-summary.md`](./docs/06-result-summary.md)           | POC 결과 요약           |
 
 
-## Security 
+## Security
 
 본 저장소에는 실제 운영 계정 정보, 보안 키, 내부 도메인, 민감한 설정 파일은 포함하지 않았습니다.
 
