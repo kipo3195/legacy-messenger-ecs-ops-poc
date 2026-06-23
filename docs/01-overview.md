@@ -73,7 +73,8 @@
 | 웹 클라이언트 접속 계층 | Websocket             |
 | 서비스 간 이벤트 디스패치 계층 | Dispatcher            | 
 | 인증 계층       | Certify               | 
-| 실시간 처리 계층   | Notificator, Presence | 
+| 실시간 처리 계층   | Notificator          | 
+| 사용자 상태 및 정보 관리 | Presence          |
 | 데이터 조회 계층   | Fetch                 | 
 | 파일 처리 계층    | File                  | 
 

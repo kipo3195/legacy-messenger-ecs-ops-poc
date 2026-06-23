@@ -103,7 +103,7 @@ ECS Task의 Network Mode를 서비스 특성에 따라 `bridge` mode와 `awsvpc`
 
 Dispatcher는 클라이언트 공통 정보 제공과 서비스 간 Gateway 역할을 수행하는 중심 서비스입니다. 다른 내부 서비스들이 Dispatcher에 접근해야 하므로, Task 재시작이나 재배치 이후에도 안정적으로 접근할 수 있는 내부 주소가 필요했습니다.
 
-`awsvpc` mode를 사용하면 ECS Task마다 별도의 ENI와 Private IP가 할당됩니다. 이를 통해 Dispatcher Task를 Cloud Map A Record로 등록하고, 내부 서비스들이 `ds.ucware.local`과 같은 Private DNS 이름으로 접근할 수 있도록 구성했습니다.
+`awsvpc` mode를 사용하면 ECS Task마다 별도의 ENI와 Private IP가 할당됩니다. 이를 통해 Dispatcher Task를 Cloud Map A Record로 등록하고, 내부 서비스들이 `ds.service.local`과 같은 Private DNS 이름으로 접근할 수 있도록 구성했습니다.
 
 Dispatcher는 내부 접근과 외부 접근을 분리했습니다. 내부 서비스 간 통신은 Cloud Map A Record 기반으로 `33000` 포트를 사용하고, 외부 접근은 NLB Listener를 통해 `33001` 포트로 연결되도록 구성했습니다.
 

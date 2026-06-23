@@ -4,13 +4,15 @@
 
 | Service | Load Balancer | Protocol | Listener Port | Target Port | Health Check |
 | --- | --- | --- | ---: | --- | --- |
-| WS | ALB | HTTP/WebSocket | 80/443 | ECS registered port | HTTP /health |
 | DS | NLB | TCP | 33001 | 33001 | TCP |
+| WS | ALB | HTTP/WebSocket | 80/443 | Dynamic host port → container 33002 | HTTP /health |
+| PS | NLB | TCP | 33003 | 33003 | TCP |
+| NS | NLB | TCP | 33004 | 33004 | TCP |
 | CS | NLB | TCP | 33006 | 33006 | TCP |
 | FETCH | NLB | TCP | 33007 | 33007 | TCP |
 | FS | NLB | TCP | 33008 | 33008 | TCP |
-| NS | NLB | TCP | 33004 | 33004 | TCP |
-| PS | NLB | TCP | 33003 | 33003 | TCP |
+
+
 
 ## 2. ALB 적용 기준
 

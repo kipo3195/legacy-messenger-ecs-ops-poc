@@ -8,7 +8,7 @@ ECS 내부 서비스 간 통신에서 Load Balancer를 거치지 않고 Private 
 
 | 항목 | 값 |
 | --- | --- |
-| Namespace | poc.local |
+| Namespace | service.local |
 | Service Name | ds |
 | Record Type | A Record |
 | Internal DNS | ds.service.local |

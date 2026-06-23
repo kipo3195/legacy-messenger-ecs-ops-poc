@@ -1,12 +1,12 @@
-# ucware-ws-service
+# ws-service
 
 ## 1. Service Overview
 
 | 항목 | 값 |
 | --- | --- |
-| Cluster | ucware-cluster |
+| Cluster | cluster |
 | Launch Type | ECS EC2 |
-| Service Name | ucware-ws-service |
+| Service Name | ws-service |
 | Desired Count | 1~2 |
 | Network Mode | bridge |
 | Load Balancer | ALB |

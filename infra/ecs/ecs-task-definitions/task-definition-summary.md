@@ -2,13 +2,13 @@
 
 | Service     | Task Definition     | Network Mode | Container Port |   Host Port | Volume Mount         | 비고                             |
 | ----------- | ------------------- | ------------ | -------------: | ----------: | -------------------- | ------------------------------ |
-| Websocket   | `ws-task`    | bridge       |          33002 | dynamic `0` | config, security_key | ALB 연결                         |
 | Dispatcher  | `ds-task`    | awsvpc       |    33000/33001 | 33000/33001 | config, security_key | Cloud Map A Record, NLB TCP 연결 |
-| Certify     | `cs-task`    | bridge       |          33006 |       33006 | config, security_key | NLB TCP 연결                     |
-| Notificator | `ns-task`    | bridge       |          33004 |       33004 | config, security_key | ALB 연결                         |
+| Websocket   | `ws-task`    | bridge       |          33002 | dynamic `0` | config, security_key | ALB 연결                         |
 | Presence    | `ps-task`    | bridge       |          33003 |       33003 | config               | NLB TCP 연결                     |
+| Notificator | `ns-task`    | bridge       |          33004 |       33004 | config, security_key | NLB TCP 연결                     |
+| Certify     | `cs-task`    | bridge       |          33006 |       33006 | config, security_key | NLB TCP 연결                     |
+| Fetch       | `fetch-task` | bridge       |          33007 |       33007 | config, security_key | NLB TCP 연결                     |
 | File        | `fs-task`    | bridge       |          33008 |       33008 | config, security_key | NLB TCP 연결                     |
-| Fetch       | `fetch-task` | bridge       |          33007 |       33007 | config               | NLB TCP 연결                     |
 
 ## 정리 기준
 

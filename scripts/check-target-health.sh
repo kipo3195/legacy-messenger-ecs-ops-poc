@@ -16,4 +16,4 @@ aws elbv2 describe-target-health \
   --region "$AWS_REGION" \
   --target-group-arn "$TARGET_GROUP_ARN" \
   --query "TargetHealthDescriptions[*].{TargetId:Target.Id,Port:Target.Port,State:TargetHealth.State,Reason:TargetHealth.Reason,Description:TargetHealth.Description}" \
-  --output table
+  --output tableT
