@@ -1,0 +1,15 @@
+[Command]
+[ws@ip- scripts]$ nc -vz 52.78.xxx.xx 33001
+
+[Result]
+Ncat: Version 7.93 ( https://nmap.org/ncat )
+Ncat: Connected to 52.78.xxx.xx:33001.
+Ncat: 0 bytes sent, 0 bytes received in 0.01 seconds.
+
+[Command]
+[ws@ip- scripts]$ nc -vz 54.116.xxx.xxx 33001
+
+[Result]
+Ncat: Version 7.93 ( https://nmap.org/ncat )
+Ncat: Connected to 54.116.xxx.xxx:33001.
+Ncat: 0 bytes sent, 0 bytes received in 0.01 seconds.

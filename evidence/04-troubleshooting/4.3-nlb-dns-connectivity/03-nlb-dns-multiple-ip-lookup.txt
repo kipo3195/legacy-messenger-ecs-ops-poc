@@ -1,0 +1,14 @@
+[Command]
+[ws@ip- ~]$ nslookup ds-nlb-***************.elb.ap-northeast-2.amazonaws.com
+
+[Result]
+Server:		172.31.0.2
+Address:	172.31.0.2#53
+
+Non-authoritative answer:
+Name:	ds-nlb--***************..elb.ap-northeast-2.amazonaws.com
+Address: 52.78.xxx.xx
+Name:	ds-nlb--***************..elb.ap-northeast-2.amazonaws.com
+Address: 54.116.xxx.xxx
+
+
