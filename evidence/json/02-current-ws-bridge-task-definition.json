@@ -1,0 +1,95 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:***********:task-definition/ws-task:7",
+  "containerDefinitions": [
+    {
+      "name": "ws",
+      "image": "***********.dkr.ecr.ap-northeast-2.amazonaws.com/ws:0.1.0",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 33002,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "command": [
+        "ws",
+        "WS",
+        "33002"
+      ],
+      "environment": [],
+      "mountPoints": [
+        {
+          "sourceVolume": "config",
+          "containerPath": "/config",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "security-key-volume",
+          "containerPath": "/security_key",
+          "readOnly": true
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ws",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "ws-task",
+  "executionRoleArn": "arn:aws:iam::***********:role/ecsTaskExecutionRole",
+  "networkMode": "bridge",
+  "revision": 7,
+  "volumes": [
+    {
+      "name": "config",
+      "host": {
+        "sourcePath": "/home/ws/config"
+      }
+    },
+    {
+      "name": "security-key-volume",
+      "host": {
+        "sourcePath": "/home/ws/security_key"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EXTERNAL",
+    "EC2"
+  ],
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "registeredAt": "2026-06-16T04:38:35.310Z",
+  "registeredBy": "arn:aws:sts::***********:assumed-role/AmazonEC2ContainerRegistryFullAccess/i-",
+  "tags": []
+}

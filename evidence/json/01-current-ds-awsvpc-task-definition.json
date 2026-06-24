@@ -1,0 +1,109 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:***********:task-definition/ds-task:14",
+  "containerDefinitions": [
+    {
+      "name": "ds",
+      "image": "***********.dkr.ecr.ap-northeast-2.amazonaws.com/ds:0.1.0",
+      "cpu": 256,
+      "memory": 384,
+      "portMappings": [
+        {
+          "containerPort": 33000,
+          "hostPort": 33000,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 33001,
+          "hostPort": 33001,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "CONFIG_PATH",
+          "value": "/app/config/dbconfig.ini"
+        },
+        {
+          "name": "TZ",
+          "value": "Asia/Seoul"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "config-volume",
+          "containerPath": "/config",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "security-key-volume",
+          "containerPath": "/security_key",
+          "readOnly": true
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ds",
+          "awslogs-region": "ap-northeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "ds-task",
+  "executionRoleArn": "arn:aws:iam::***********:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "revision": 14,
+  "volumes": [
+    {
+      "name": "config-volume",
+      "host": {
+        "sourcePath": "/home/ws/config"
+      }
+    },
+    {
+      "name": "security-key-volume",
+      "host": {
+        "sourcePath": "/home/ws/security_key"
+      }
+    }
+  ],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "MANAGED_INSTANCES"
+  ],
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "registeredAt": "2026-06-15T08:15:33.225Z",
+  "registeredBy": "arn:aws:sts::***********:assumed-role/AmazonEC2ContainerRegistryFullAccess/i-",
+  "tags": []
+}
