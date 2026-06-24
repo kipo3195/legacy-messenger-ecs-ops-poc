@@ -1,28 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TARGET_GROUP_ARN="${1:-}"
+TARGET_GROUP_NAME_OR_ARN="${1:?Usage: ./check-target-health.sh <target-group-name-or-arn>}"
 
-if [[ -z "$TARGET_GROUP_ARN" ]]; then
-  echo "Usage: $0 <target-group-arn>"
-  echo "Example: $0 \$WS_TG_ARN"
-  exit 1
-fi
-
-if [[ -z "${AWS_REGION:-}" ]]; then
-  echo "AWS_REGION must be set."
-  echo "Run: source .env"
-  exit 1
+if [[ "$TARGET_GROUP_NAME_OR_ARN" == arn:* ]]; then
+  TARGET_GROUP_ARN="$TARGET_GROUP_NAME_OR_ARN"
+else
+  TARGET_GROUP_ARN=$(aws elbv2 describe-target-groups \
+    --names "$TARGET_GROUP_NAME_OR_ARN" \
+    --query 'TargetGroups[0].TargetGroupArn' \
+    --output text)
 fi
 
 aws elbv2 describe-target-health \
-  --region "$AWS_REGION" \
   --target-group-arn "$TARGET_GROUP_ARN" \
-  --query 'TargetHealthDescriptions[*].{
-    TargetId:Target.Id,
-    Port:Target.Port,
-    State:TargetHealth.State,
-    Reason:TargetHealth.Reason,
-    Description:TargetHealth.Description
-  }' \
+  --query 'TargetHealthDescriptions[*].[Target.Id,Target.Port,TargetHealth.State,TargetHealth.Reason,TargetHealth.Description]' \
   --output table

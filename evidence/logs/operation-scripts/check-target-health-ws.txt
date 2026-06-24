@@ -1,0 +1,10 @@
+[Command]
+[ws@ip scripts]$ ./check-target-health.sh ws-bridge-tg
+
+[Result]
+-------------------------------------------------------------
+|                   DescribeTargetHealth                    |
++----------------------+--------+----------+-------+--------+
+|  i-0feaa8d2e802c994e |  32798 |  healthy |  None |  None  |
+|  i-0feaa8d2e802c994e |  32799 |  healthy |  None |  None  |
++----------------------+--------+----------+-------+--------+

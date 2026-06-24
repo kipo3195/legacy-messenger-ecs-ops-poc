@@ -1,0 +1,25 @@
+[Command]
+[ws@ip scripts]$ ./test-port-connectivity.sh ds-nlb--**************.elb.ap-northeast-2.amazonaws.com 33001
+
+[Result]
+Testing TCP connectivity
+Host: ds-nlb--**************.elb.ap-northeast-2.amazonaws.com
+Port: 33001
+Method: nc -vz
+Ncat: Version 7.93 ( https://nmap.org/ncat )
+Ncat: Connected to XX.XXX.138.233:33001.
+Ncat: 0 bytes sent, 0 bytes received in 0.01 seconds.
+Connection: SUCCESS
+
+[Command]
+[ws@ip- scripts]$ ./test-port-connectivity.sh ds-nlb-**************.elb.ap-northeast-2.amazonaws.com 33001
+
+[Result]
+Testing TCP connectivity
+Host: ds-nlb--**************.elb.ap-northeast-2.amazonaws.com
+Port: 33001
+Method: nc -vz
+Ncat: Version 7.93 ( https://nmap.org/ncat )
+Ncat: Connected to XX.XX.132.42:33001.
+Ncat: 0 bytes sent, 0 bytes received in 0.01 seconds.
+Connection: SUCCESS

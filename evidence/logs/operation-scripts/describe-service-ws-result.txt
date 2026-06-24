@@ -1,0 +1,15 @@
+[Command]
+[ws@ip- scripts]$ ./describe-service.sh ws-service
+
+
+[Result]
+------------------------------------------------------------------------------------------------
+|                                       DescribeServices                                       |
++----------------+-----------------------------------------------------------------------------+
+|  desiredCount  |  1                                                                          |
+|  pendingCount  |  0                                                                          |
+|  runningCount  |  1                                                                          |
+|  serviceName   |  ws-service                                                                 |
+|  status        |  ACTIVE                                                                     |
+|  taskDefinition|  arn:aws:ecs:ap-northeast-2:************:task-definition/ws-task:7          |
++----------------+-----------------------------------------------------------------------------+
