@@ -6,7 +6,7 @@
 
 이에 따라 DS 서비스는 Cloud Map A Record 기반으로 조정했습니다.
 
-- Internal DNS: `ds.sevice.local`
+- Internal DNS: `ds.service.local`
 - Internal Port: `33000`
 - External Port: `33001`
 - Network Mode: `awsvpc`

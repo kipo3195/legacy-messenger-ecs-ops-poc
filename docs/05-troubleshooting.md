@@ -164,6 +164,11 @@ ECS 전환 시에는 서비스별 통신 특성, 내부 DNS 필요 여부, Task 
 
 결과적으로 이 이슈는 `bridge`와 `awsvpc`를 혼합한 현재 ECS 아키텍처 결정의 직접적인 근거가 되었습니다.
 
+**Evidence**
+- `../evidence/04-troubleshooting/4.1-resource-constraint-network-mode/01-current-ds-awsvpc-task-definition.json`
+- `../evidence/04-troubleshooting/4.1-resource-constraint-network-mode/02-current-ws-bridge-task-definition.json`
+- `../evidence/04-troubleshooting/4.1-resource-constraint-network-mode/03-network-mode-decision-summary.md`
+
 ---
 
 ## 4. Cloud Map SRV Record 호환 문제와 A Record 전환
@@ -289,6 +294,11 @@ Cloud Map SRV Record 미적용
 ```
 
 이 결정은 Dispatcher를 awsvpc mode로 유지한 이유와도 직접 연결됩니다.
+
+**Evidence**
+- `../evidence/04-troubleshooting/4.2-cloudmap-srv-compatibility/02-cloudmap-ds-nslookup-success.txt`
+- `../evidence/04-troubleshooting/4.2-cloudmap-srv-compatibility/03-cloudmap-ds-port-connectivity-success.txt`
+- `../evidence/04-troubleshooting/4.2-cloudmap-srv-compatibility/04-cloudmap-record-type-decision-summary.md`
 
 ---
 
@@ -424,6 +434,11 @@ NLB DNS 해석
 ```
 
 이 과정을 통해 NLB 기반 TCP 서비스 운영 시 AZ별 healthy target 확보와 배치 전략이 중요하다는 점을 확인했습니다.
+
+**Evidence**
+- `../evidence/04-troubleshooting/4.3-nlb-dns-connectivity/03-nlb-dns-multiple-ip-lookup.txt`
+- `../evidence/04-troubleshooting/4.3-nlb-dns-connectivity/04-nlb-ip-connectivity-test.txt`
+- `../evidence/04-troubleshooting/4.3-nlb-dns-connectivity/05-nlb-connectivity-summary.md`
 
 ---
 
