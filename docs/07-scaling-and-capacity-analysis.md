@@ -4,7 +4,7 @@
 
 본 문서는 레거시 Java 메신저 서비스를 ECS 기반으로 전환하는 과정에서 Scale-out 시 발생했던 몇 가지 문제를 분석하고, ECS Auto Scaling을 메신저 서비스에 적용할 때 고려해야 할 한계와 보완 방향을 정리하기 위해 작성한다.
 
-현재 POC에서 ECS Auto Scaling 검증은 CPU 기반 Target Tracking 정책을 적용했다. 그러나 레거시 메신저는 소켓(TCP/Websocket) 통신을 기반으로 데이터를 실시간으로 주고받는 구조이므로 일반적인 HTTP API 서버와 부하 특성이 다르다. 
+현재 POC에서 ECS Auto Scaling 검증은 CPU 기반 Target Tracking 정책을 적용했다. 그러나 레거시 메신저는 소켓(TCP/WebSocket) 통신을 기반으로 데이터를 실시간으로 주고받는 구조이므로 일반적인 HTTP API 서버와 부하 특성이 다르다.
 
 클라이언트는 소켓 통신을 기반으로 long-lived connection을 유지하기 때문에 순간적인 request count나 CPU, memory 사용률만으로 Auto Scaling 정책을 세우기 어려운 측면이 있다. 따라서 ECS 환경에서 Auto Scaling이 실제로 동작하는 방식과 메신저 서비스의 부하 특성을 함께 고려하여 Scaling 정책을 검토할 필요가 있다.
 
@@ -14,13 +14,16 @@
 * Auto Scaling 이후 task 배치가 지연되거나 실패할 수 있는 원인
 * CPU 기반 Target Tracking 정책이 레거시 메신저 기반 서비스에서 갖는 한계
 * 메신저 서비스에 적합한 Scaling metric 후보
-* 향후 connection 수 기반 Scaling 또는 별도 control plane 적용 가능성
+* connection 수 기반 Scale-out 판단 기준
+* ECS 운영 제어와 connection 기반 Scaling 판단을 수행하기 위한 Control Plane Service 적용 방향
 
 본 분석의 핵심은 다음과 같다.
 
 > ECS Auto Scaling은 desired count를 증가시키는 것만으로 완료되지 않는다.
 > 실제 running task 증가를 위해서는 EC2 capacity, task placement, CPU/memory reservation, network mode, hostPort, Target Group health check 조건이 함께 충족되어야 한다.
 > 또한 메신저 서비스는 long-lived connection 특성상 CPU 기반 Scaling만으로는 실제 부하를 충분히 표현하기 어렵다.
+> 따라서 WebSocket 기반 서비스에서는 connection pressure를 별도로 측정하고, 이를 기반으로 Scale-out 여부를 판단할 수 있는 운영 제어 계층이 필요하다.
+
 
 ---
 
@@ -294,11 +297,12 @@ publish interval: 3~5s
 
 ---
 
-## 8. Control Plane 적용 가능성
+## 8. Control Plane 기반 운영 제어 방향
 
 Connection 기반 Scaling을 적용하려면 단순 CloudWatch metric만으로 처리할 수도 있고, 별도 control plane을 둘 수도 있다.
 
-단순한 ECS desired count 조정이나 scheduled operation은 Lambda + EventBridge로도 충분히 구현할 수 있다.
+단순한 ECS desired count 조정이나 scheduled operation은 Lambda + EventBridge 방식으로도 구현할 수 있다. 
+하지만 본 POC의 목적은 단순 자동화가 아니라, ECS 전환 이후 운영자가 서비스 상태를 조회하고, 배포를 제어하며, connection 기반 Scale-out 판단 결과를 확인할 수 있는 운영 제어 계층을 설계하는 데 있다.
 
 ```text
 CloudWatch Alarm / EventBridge
@@ -318,7 +322,8 @@ CloudWatch Alarm / EventBridge
 - cooldown, maxStep, min/max task 제한
 - dry-run mode 제공
 ```
-따라서 본 문서에서는 Control Plane을 즉시 구축 대상으로 확정하기보다, connection 기반 Scaling 자동화가 필요해질 경우 검토할 수 있는 확장 옵션으로 정리한다.
+따라서 본 문서에서는 Control Plane을 단순한 자동 Scaling 도구가 아니라, ECS 전환 이후 운영 제어를 담당하는 별도 서비스로 분리할 수 있는 확장 방향으로 정리한다. 
+이후 후속 구현에서는 connection 기반 Scaling 판단과 ECS 운영 API를 포함하는 Go 기반 Control Plane Service를 별도 저장소로 구성한다.
 
 ---
 
@@ -335,6 +340,34 @@ CloudWatch Alarm / EventBridge
 2. WS task별 active connection count 수집
 3. Connections Per Task 기준으로 Scale-out 판단
 4. Scale-out은 선제적으로, Scale-in은 보수적으로 수행
-5. 단순한 Connections Per Task 기반 Scale-out 자동화는 Lambda/EventBridge 방식 우선 검토
-6. 운영 API, 상태 조회, decision log까지 필요할 경우 별도 Control Plane 검토
+5. 단순 자동화는 Lambda/EventBridge 방식도 가능하지만, 운영 제어와 decision log가 필요한 경우 Control Plane 방식이 적합
+6. 본 POC의 후속 구현으로 ECS API 기반 Control Plane Service를 별도 저장소로 분리
 ```
+
+## 10. Control Plane Service 구현
+
+본 문서에서 정리한 Scale-out 한계와 connection 기반 Scaling 보완 방향을 실제 운영 제어 구조로 확장하기 위해, Go 기반의 `legacy-messenger-control-plane` 저장소를 별도로 구성하였다.
+
+기존 레거시 메신저 운영 방식은 서버별 shell script를 통해 Java 프로세스를 직접 기동, 중지, 재기동하는 구조였다. ECS 전환 이후에는 이러한 방식 대신 ECS API를 통해 Service 상태를 조회하고, desiredCount 변경, force new deployment, connection 기반 Scale-out 판단을 수행할 수 있는 별도 운영 제어 계층이 필요하다.
+
+`legacy-messenger-control-plane`은 단순히 ECS desiredCount를 변경하는 API 서버가 아니라, WebSocket 기반 long-lived connection 서비스의 부하 특성을 반영하여 현재 connection pressure를 계산하고, Scale-out 필요 여부를 판단하는 운영 Control Plane Service를 목표로 한다.
+
+구현 범위는 다음과 같다.
+
+```text
+- ECS Service 상태 조회
+- ECS Service desiredCount 변경
+- ECS Service force new deployment 실행
+- ALB ActiveConnectionCount 조회
+- running task 수 기반 Connections Per Task 계산
+- targetConnectionsPerTask, min/max task, maxStep 기준값 적용
+- connection 기반 Scale-out decision dry-run
+- 운영자 승인 기반 Scale-out apply
+- Scaling decision log 기록
+```
+
+이를 통해 본 POC는 CPU 기반 ECS Auto Scaling 검증에서 끝나는 것이 아니라, 레거시 메신저의 long-lived connection 특성을 고려한 운영 제어 구조로 확장된다.
+
+관련 구현 저장소는 아래에서 확인할 수 있다.
+
+* [legacy-messenger-control-plane](https://github.com/kipo3195/legacy-messenger-control-plane)
